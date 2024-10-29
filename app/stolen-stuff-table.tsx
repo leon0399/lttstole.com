@@ -18,6 +18,40 @@ import {
 import { type StolenProperty } from "@/data/stolen-stuff";
 import videos from "@/data/videos";
 import products from "@/data/products";
+import { getPreviews, parseId } from "@/lib/youtube";
+import Image from "next/image";
+
+const YouTubeLink = ({ url, title }: { url: string, title: string }) => {
+  const previews = useMemo(() => getPreviews(parseId(url)), [url])
+
+  return (
+    <Button variant={"link"} size={"sm"} asChild className="px-0 h-auto">
+      <a 
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <div
+          className="w-12 mr-1"
+        >
+          <Image
+            src={previews.maxres} 
+            alt={title} 
+            layout={"responsive"}
+            className="rounded-md"
+            width={48}
+            height={48}
+            loading="lazy"
+          />
+        </div>
+
+        {title}
+  
+        <ExternalLinkIcon />
+      </a>
+    </Button>
+  )
+}
 
 interface StolenStuffTableProps {
   data: StolenProperty[]
@@ -31,19 +65,7 @@ export default function StolenStuffTable({
   const columns = useMemo(() => [
     columnHelper.accessor("Video", {
       header: ({ column }) => (<DataTableColumnHeader column={column}>Video</DataTableColumnHeader>),
-      cell: (info) => (
-        <Button variant={"link"} size={"sm"} asChild className="px-0 h-auto">
-          <a
-            href={info.getValue()}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {videos[info.getValue()]?.Title ?? info.getValue()}
-
-            <ExternalLinkIcon />
-          </a>
-        </Button>
-      ),
+      cell: (info) => (<YouTubeLink url={info.getValue()} title={videos[info.getValue()]?.Title || info.getValue()} />),
       enableSorting: false,
       enableHiding: false,
     }),
@@ -106,6 +128,16 @@ export default function StolenStuffTable({
       header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Total</DataTableColumnHeader>),
       cell: (info) => (<div className="text-right pr-11">{info.row.original.Total}</div>),
       enableHiding: false,
+      footer: (info) => {
+        const sum = info.table.getFilteredRowModel().rows.reduce((prev, curr) => prev + curr.original.TotalAsNumber, 0)
+
+        return (
+          <div className="text-right pr-11">
+            <span className="text-sm text-muted-foreground/70">Sum:{' '}</span>
+            ${sum.toFixed(2)}
+          </div>
+        )
+      }
     }),
     columnHelper.accessor("Justification", {
       header: ({ column }) => (<DataTableColumnHeader column={column}>Justification</DataTableColumnHeader>),
