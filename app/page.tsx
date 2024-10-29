@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { timecodeToSeconds } from '@/lib/datetime';
 
 import stolen from "@/data/stolen-stuff";
 import videos from "@/data/videos";
@@ -17,11 +16,7 @@ export default async function Home() {
   // todo: filter data
   const filteredData = stolen;
 
-  const totalPrice = filteredData.reduce((acc, row) => {
-    const price = parseFloat(row["Est. price"].replace('$', '').replace(',', ''));
-    const qty = parseInt(row.Qty, 10);
-    return acc + price * qty;
-  }, 0);
+  const totalPrice = filteredData.reduce((acc, row) => acc + row.TotalAsNumber, 0);
 
   return (
     <div className="">
@@ -53,12 +48,11 @@ export default async function Home() {
                 </TableCell>
                 <TableCell className="text-right">
                   {
-                    row["Timecode(s)"]
-                      .split(', ')
+                    row.Timecodes
                       .map((timecode, j) => (
                         <a 
                           key={`stolen-${i}-timecode-${j}`} 
-                          href={`${row.Video}?t=${timecodeToSeconds(timecode)}`} 
+                          href={`${row.Video}?t=${row.TimecodesAsSeconds[j]}`} 
                           target="_blank" 
                           rel="noreferrer"
                         >
@@ -75,10 +69,8 @@ export default async function Home() {
                   ) : row.Product}
                 </TableCell>
                 <TableCell className="text-right">{row.Qty}</TableCell>
-                <TableCell className="text-right">{row["Est. price"]}</TableCell>
-                <TableCell className="text-right">
-                  ${(parseFloat(row["Est. price"].replace('$', '').replace(',', '')) * parseInt(row.Qty, 10)).toFixed(2)}
-                </TableCell>
+                <TableCell className="text-right">{row.EstimatedPrice}</TableCell>
+                <TableCell className="text-right">{row.Total}</TableCell>
                 <TableCell>{row.Justification}</TableCell>
               </TableRow>
             ))}
