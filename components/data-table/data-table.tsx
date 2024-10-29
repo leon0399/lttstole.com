@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ForwardedRef, forwardRef } from "react"
+import { type ForwardedRef, forwardRef, type RefAttributes } from "react"
 
 interface DataTableProps<TData> {
   table: TanstackTable<TData>
@@ -61,4 +61,6 @@ function DataTableInner<TData>(
   )
 }
 
-export const DataTable = forwardRef(DataTableInner);
+export const DataTable = forwardRef(DataTableInner) as <TData>(
+  props: DataTableProps<TData> & RefAttributes<HTMLTableElement>
+) => ReturnType<typeof DataTableInner>

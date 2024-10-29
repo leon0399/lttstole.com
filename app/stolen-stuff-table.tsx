@@ -1,7 +1,7 @@
 "use client"
 
+import { useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table/data-table";
-import { StolenProperty } from "@/data/stolen-stuff";
 import { 
   useReactTable,
   createColumnHelper, 
@@ -9,11 +9,15 @@ import {
   getSortedRowModel, 
   SortingState, 
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { Button } from "@/components/ui/button";
+import {
+  ExternalLinkIcon,
+} from "lucide-react";
 
+import { type StolenProperty } from "@/data/stolen-stuff";
 import videos from "@/data/videos";
 import products from "@/data/products";
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 
 interface StolenStuffTableProps {
   data: StolenProperty[]
@@ -28,13 +32,17 @@ export default function StolenStuffTable({
     columnHelper.accessor("Video", {
       header: ({ column }) => (<DataTableColumnHeader column={column}>Video</DataTableColumnHeader>),
       cell: (info) => (
-        <a 
-          href={info.getValue()} 
-          target="_blank" 
-          rel="noreferrer"
-        >
-          {videos[info.getValue()]?.Title ?? info.getValue()}
-        </a>
+        <Button variant={"link"} size={"sm"} asChild className="px-0 h-auto">
+          <a
+            href={info.getValue()}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {videos[info.getValue()]?.Title ?? info.getValue()}
+
+            <ExternalLinkIcon />
+          </a>
+        </Button>
       ),
       enableSorting: false,
       enableHiding: false,
@@ -67,13 +75,17 @@ export default function StolenStuffTable({
       header: ({ column }) => (<DataTableColumnHeader column={column}>Product</DataTableColumnHeader>),
       cell: (info) => (
         products[info.getValue()]?.url ? (
-          <a 
-            href={products[info.getValue()]?.url} 
-            target="_blank" 
-            rel="noreferrer"
-          >
-            {info.getValue()}
-          </a>
+          <Button variant={"link"} size={"sm"} asChild className="px-0 h-auto">
+            <a
+              href={products[info.getValue()]?.url} 
+              target="_blank" 
+              rel="noreferrer"
+            >
+              {info.getValue()}
+
+              <ExternalLinkIcon />
+            </a>
+          </Button>
         ) : info.getValue()
       ),
       enableSorting: false,
@@ -85,14 +97,14 @@ export default function StolenStuffTable({
       enableSorting: false,
       enableHiding: false,
     }),
-    columnHelper.accessor("EstimatedPrice", {
+    columnHelper.accessor("EstimatedPriceAsNumber", {
       header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Estimated Price</DataTableColumnHeader>),
-      cell: (info) => (<div className="text-right">{info.getValue()}</div>),
+      cell: (info) => (<div className="text-right pr-11">{info.row.original.EstimatedPrice}</div>),
       enableHiding: false,
     }),
-    columnHelper.accessor("Total", {
+    columnHelper.accessor("TotalAsNumber", {
       header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Total</DataTableColumnHeader>),
-      cell: (info) => (<div className="text-right">{info.getValue()}</div>),
+      cell: (info) => (<div className="text-right pr-11">{info.row.original.Total}</div>),
       enableHiding: false,
     }),
     columnHelper.accessor("Justification", {

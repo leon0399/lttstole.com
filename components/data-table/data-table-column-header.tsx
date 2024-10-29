@@ -3,6 +3,7 @@ import {
   ArrowUpIcon,
   ChevronsUpDownIcon,
   EyeOffIcon,
+  CircleIcon,
 } from "lucide-react"
 import { type Column } from "@tanstack/react-table"
 
@@ -94,28 +95,34 @@ export function DataTableColumnHeader<TData, TValue>({
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align={align}>
+        <DropdownMenuContent align={align ?? undefined}>
           {column.getCanSort() && (
             <>
               <DropdownMenuItem
                 aria-label="Sort ascending"
-                onClick={() => column.toggleSorting(false)}
+                onClick={() => column.getIsSorted() === "asc" ? column.clearSorting() : column.toggleSorting(false)}
               >
+                <div className="h-2 w-2 mx-1">
+                  { column.getIsSorted() === "asc" && <CircleIcon className="!h-2 !w-2 fill-current" aria-hidden="true" /> }
+                </div>
+                Asc
                 <ArrowUpIcon
-                  className="mr-2 size-3.5 text-muted-foreground/70"
+                  className="ml-auto size-3.5 text-muted-foreground/70"
                   aria-hidden="true"
                 />
-                Asc
               </DropdownMenuItem>
               <DropdownMenuItem
                 aria-label="Sort descending"
-                onClick={() => column.toggleSorting(true)}
+                onClick={() => column.getIsSorted() === "desc" ? column.clearSorting() : column.toggleSorting(true)}
               >
+                <div className="h-2 w-2 mx-1">
+                  { column.getIsSorted() === "desc" && <CircleIcon className="!h-2 !w-2 fill-current" aria-hidden="true" /> }
+                </div>
+                Desc
                 <ArrowDownIcon
-                  className="mr-2 size-3.5 text-muted-foreground/70"
+                  className="ml-auto size-3.5 text-muted-foreground/70"
                   aria-hidden="true"
                 />
-                Desc
               </DropdownMenuItem>
             </>
           )}
