@@ -1,5 +1,3 @@
-import { parseMarkdownTable } from '@/lib/markdown';
-import { promises as fs } from 'fs';
 import {
   Table,
   TableBody,
@@ -9,49 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import videosData from '../data/videos.json';
-import productsData from '../data/products.json';
 import { timecodeToSeconds } from '@/lib/datetime';
 
-export type StolenProperty = {
-  /**
-   * YouTube video URL
-   */
-  Video: string;
-
-  /**
-   * Timecode in the video
-   * @example 1:23 represents 1 minute and 23 seconds
-   * @example 64:23 represents 64 minutes and 23 seconds
-   */
-  "Timecode(s)": string;
-
-  Who: string;
-  Product: string;
-  "Est. price": string;
-  Qty: string;
-  Justification: string;
-}
-
-export type Video = {
-  Title: string;
-  Series: string;
-}
-export type Videos = Record<string, Video>;
-const videos = videosData as Videos;
-
-export type Product = {
-  url: string;
-}
-export type Products = Record<string, Product>;
-const products = productsData as Products;
+import stolen from "@/data/stolen-stuff";
+import videos from "@/data/videos";
+import products from "@/data/products";
 
 export default async function Home() {
-  const markdownContent = await fs.readFile(process.cwd() + '/STOLEN.md', 'utf8');
-  const data = parseMarkdownTable(markdownContent) as StolenProperty[];
-
   // todo: filter data
-  const filteredData = data;
+  const filteredData = stolen;
 
   const totalPrice = filteredData.reduce((acc, row) => {
     const price = parseFloat(row["Est. price"].replace('$', '').replace(',', ''));
