@@ -2,11 +2,18 @@
 
 import { DataTable } from "@/components/data-table/data-table";
 import { StolenProperty } from "@/data/stolen-stuff";
-import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { 
+  useReactTable,
+  createColumnHelper, 
+  getCoreRowModel, 
+  getSortedRowModel, 
+  SortingState, 
+} from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 
 import videos from "@/data/videos";
 import products from "@/data/products";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 
 interface StolenStuffTableProps {
   data: StolenProperty[]
@@ -19,7 +26,7 @@ export default function StolenStuffTable({
 
   const columns = useMemo(() => [
     columnHelper.accessor("Video", {
-      header: "Video",
+      header: ({ column }) => (<DataTableColumnHeader column={column}>Video</DataTableColumnHeader>),
       cell: (info) => (
         <a 
           href={info.getValue()} 
@@ -29,10 +36,12 @@ export default function StolenStuffTable({
           {videos[info.getValue()]?.Title ?? info.getValue()}
         </a>
       ),
+      enableSorting: false,
+      enableHiding: false,
     }),
     columnHelper.accessor("Timecodes", {
-      header: () => (<div className="text-right">Timecode</div>),
-      cell: (info) => (<div className="text-right">{
+      header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Timecodes</DataTableColumnHeader>),
+      cell: (info) => (<div className="text-end">{
         info.getValue()
           .map((timecode, j) => (
             <a 
@@ -46,12 +55,16 @@ export default function StolenStuffTable({
           ))
           .reduce<React.ReactNode[]>((prev, curr) => prev.length === 0 ? [curr] : [...prev, ', ', curr], [])
       }</div>),
+      enableSorting: false,
+      enableHiding: false,
     }),
     columnHelper.accessor("Who", {
-      header: "Who",
+      header: ({ column }) => (<DataTableColumnHeader column={column}>Who</DataTableColumnHeader>),
+      enableSorting: false,
+      enableHiding: false,
     }),
     columnHelper.accessor("Product", {
-      header: "Product",
+      header: ({ column }) => (<DataTableColumnHeader column={column}>Product</DataTableColumnHeader>),
       cell: (info) => (
         products[info.getValue()]?.url ? (
           <a 
@@ -63,28 +76,43 @@ export default function StolenStuffTable({
           </a>
         ) : info.getValue()
       ),
+      enableSorting: false,
+      enableHiding: false,
     }),
     columnHelper.accessor("Qty", {
-      header: () => (<div className="text-right">Quantity</div>),
+      header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Qty</DataTableColumnHeader>),
       cell: (info) => (<div className="text-right">{info.getValue()}</div>),
+      enableSorting: false,
+      enableHiding: false,
     }),
     columnHelper.accessor("EstimatedPrice", {
-      header: () => (<div className="text-right">Estimated Price</div>),
+      header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Estimated Price</DataTableColumnHeader>),
       cell: (info) => (<div className="text-right">{info.getValue()}</div>),
+      enableHiding: false,
     }),
     columnHelper.accessor("Total", {
-      header: () => (<div className="text-right">Total</div>),
+      header: ({ column }) => (<DataTableColumnHeader column={column} align="end">Total</DataTableColumnHeader>),
       cell: (info) => (<div className="text-right">{info.getValue()}</div>),
+      enableHiding: false,
     }),
     columnHelper.accessor("Justification", {
-      header: "Justification",
+      header: ({ column }) => (<DataTableColumnHeader column={column}>Justification</DataTableColumnHeader>),
+      enableSorting: false,
+      enableHiding: false,
     }),
   ], [columnHelper])
+
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
   })
 
   return (
