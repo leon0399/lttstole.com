@@ -59,7 +59,7 @@ export default async function Home() {
                           {timecode}
                         </a>
                       ))
-                      .reduce<React.ReactNode[]>((prev, curr) => [...prev, ', ', curr], [])
+                      .reduce<React.ReactNode[]>((prev, curr) => prev.length === 0 ? [curr] : [...prev, ', ', curr], [])
                   }
                 </TableCell>
                 <TableCell>{row.Who}</TableCell>
