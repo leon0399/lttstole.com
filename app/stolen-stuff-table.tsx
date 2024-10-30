@@ -20,6 +20,7 @@ import videos from "@/data/videos";
 import products from "@/data/products";
 import { getPreviews, parseId } from "@/lib/youtube";
 import Image from "next/image";
+import LTTLogo from "@/app/LTT_Logo.png";
 
 const YouTubeLink = ({ url, title }: { url: string, title: string }) => {
   const previews = useMemo(() => getPreviews(parseId(url)), [url])
@@ -95,21 +96,50 @@ export default function StolenStuffTable({
     }),
     columnHelper.accessor("Product", {
       header: ({ column }) => (<DataTableColumnHeader column={column}>Product</DataTableColumnHeader>),
-      cell: (info) => (
-        products[info.getValue()]?.url ? (
-          <Button variant={"link"} size={"sm"} asChild className="px-0 h-auto">
-            <a
-              href={products[info.getValue()]?.url} 
-              target="_blank" 
-              rel="noreferrer"
-            >
-              {info.getValue()}
+      cell: (info) => {
+        const productName = info.getValue();
+        const isKnownProduct = productName in products;
+        const isLttProduct = productName.includes("LTT");
 
-              <ExternalLinkIcon />
-            </a>
-          </Button>
-        ) : info.getValue()
-      ),
+        const renderLttLogo = isLttProduct ? (
+          <div
+            className="w-4"
+          >
+            <Image
+              src={LTTLogo} 
+              alt={"Linus Tech Tips Logo"} 
+              layout={"responsive"}
+              className="rounded-md"
+              width={16}
+              height={16}
+              loading="lazy"
+            />
+          </div>
+        ) : null;
+
+        return (
+          isKnownProduct ? (
+            <Button variant={"link"} size={"sm"} asChild className="px-0 h-auto">
+              <a
+                href={products[info.getValue()].url} 
+                target="_blank" 
+                rel="noreferrer"
+              >
+                {renderLttLogo}
+
+                {info.getValue()}
+  
+                <ExternalLinkIcon />
+              </a>
+            </Button>
+          ) : (
+            <div className="flex flex-row gap-2 items-center">
+              {renderLttLogo}
+              {info.getValue()}
+            </div>
+          )
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     }),
