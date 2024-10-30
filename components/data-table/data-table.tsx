@@ -9,6 +9,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -44,7 +45,7 @@ function DataTableInner<TData>(
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows.map((row) => (
+        {table.getFilteredRowModel().rows.map((row) => (
           <TableRow
             key={row.id}
             data-state={row.getIsSelected() && "selected"}
@@ -57,6 +58,19 @@ function DataTableInner<TData>(
           </TableRow>
         ))}
       </TableBody>
+      {table.getFooterGroups().length > 0 && (
+        <TableFooter>
+          {table.getFooterGroups().map((footerGroup) => (
+            <TableRow key={footerGroup.id}>
+              {footerGroup.headers.map((footer) => (
+                <TableCell key={footer.id}>
+                  {flexRender(footer.column.columnDef.footer, footer.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableFooter>
+      )}
     </Table>
   )
 }

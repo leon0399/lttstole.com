@@ -159,7 +159,8 @@ export default function StolenStuffTable({
       cell: (info) => (<div className="text-right pr-11">{info.row.original.Total}</div>),
       enableHiding: false,
       footer: (info) => {
-        const sum = info.table.getFilteredRowModel().rows.reduce((prev, curr) => prev + curr.original.TotalAsNumber, 0)
+        const sum = info.table.getFilteredRowModel().rows
+          .reduce((prev, curr) => prev + ((curr.original.TotalAsNumber === "?") ? 0 : curr.original.TotalAsNumber), 0)
 
         return (
           <div className="text-right pr-11">

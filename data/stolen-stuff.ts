@@ -18,7 +18,7 @@ export type RawStolenProperty = {
 
   Who: string;
   Product: string;
-  "Est. price": string;
+  "Est. price": string | "?";
   Qty: string;
   Justification: string;
 }
@@ -41,13 +41,13 @@ export type StolenProperty = {
   
   Product: string;
   
-  EstimatedPrice: string;
-  EstimatedPriceAsNumber: number;
+  EstimatedPrice: string | "?";
+  EstimatedPriceAsNumber: number | "?";
 
   Qty: number;
   
-  Total: string;
-  TotalAsNumber: number;
+  Total: string | "?";
+  TotalAsNumber: number | "?";
   
   Justification: string;
 }
@@ -55,11 +55,11 @@ export type StolenProperty = {
 const stolen = (parseMarkdownTable(stolenData) as RawStolenProperty[])
   .map(row => {
     const timecodes = row["Timecode(s)"].split(', ');
-    const estimatedPrice = parseFloat(row["Est. price"].replace('$', '').replace(',', ''));
+    const estimatedPrice = row["Est. price"] === "?" ? "?" : parseFloat(row["Est. price"].replace('$', '').replace(',', ''));
     const qty = parseInt(row.Qty, 10);
 
-    const total = estimatedPrice * qty;
-    const totalFormatted = `$${total.toFixed(2)}`;
+    const total = estimatedPrice === "?" ? "?" : estimatedPrice * qty;
+    const totalFormatted = total === "?" ? "?" : `$${total.toFixed(2)}`;
 
     return {
       ...row,
